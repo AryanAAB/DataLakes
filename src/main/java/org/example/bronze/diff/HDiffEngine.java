@@ -3,17 +3,22 @@ package org.example.bronze.diff;
 import org.example.bronze.util.Constants;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class XDeltaDiffEngine implements DiffEngine
+public class HDiffEngine implements DiffEngine
 {
-    private XDeltaDiffEngine() {}
+    private HDiffEngine()
+    {
+    }
 
     private static class Holder
     {
-        private static final XDeltaDiffEngine INSTANCE = new XDeltaDiffEngine();
+        private static final HDiffEngine INSTANCE = new HDiffEngine();
     }
 
-    public static XDeltaDiffEngine getInstance()
+    public static HDiffEngine getInstance()
     {
         return Holder.INSTANCE;
     }
@@ -21,14 +26,14 @@ public class XDeltaDiffEngine implements DiffEngine
     @Override
     public void computeDelta(Path oldFile, Path newFile, Path deltaFile) throws Exception
     {
-        Process p = new ProcessBuilder(
-                Constants.xDeltaEncodeCommand,
-                oldFile.toString(),
-                newFile.toString(),
-                deltaFile.toString()
-        ).start();
+        List<String> cmd = new ArrayList<>(Arrays.asList(Constants.HDIFF_ENCODE_BASE));
+        cmd.add(oldFile.toString());
+        cmd.add(newFile.toString());
+        cmd.add(deltaFile.toString());
 
-        if(p.waitFor() != 0)
+        Process p = new ProcessBuilder(cmd).start();
+
+        if (p.waitFor() != 0)
         {
             Constants.logger.error("xdelta encode failed for file " + oldFile + " to " + newFile + " into " + deltaFile + ".");
             throw new RuntimeException("xdelta encode failed.");
@@ -39,13 +44,13 @@ public class XDeltaDiffEngine implements DiffEngine
     public void applyDelta(Path baseFile, Path deltaFile, Path outputFile) throws Exception
     {
         Process p = new ProcessBuilder(
-            Constants.xDeltaDecodeCommand,
-            baseFile.toString(),
-            deltaFile.toString(),
-            outputFile.toString()
+                Constants.HDIFF_DECODE_BASE,
+                baseFile.toString(),
+                deltaFile.toString(),
+                outputFile.toString()
         ).start();
 
-        if(p.waitFor() != 0)
+        if (p.waitFor() != 0)
         {
             Constants.logger.error("xdelta decode failed for file " + baseFile + " to " + deltaFile + " into " + outputFile + ".");
             throw new RuntimeException("xdelta decode failed.");

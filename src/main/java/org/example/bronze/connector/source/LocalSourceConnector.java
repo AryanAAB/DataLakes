@@ -5,7 +5,6 @@ import org.example.bronze.util.Constants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +16,11 @@ public class LocalSourceConnector implements SourceConnector
     private final Path sourceDirectory;
     private final Path dumpDirectory;
 
-    public LocalSourceConnector(String sourceDirectory, String dumpDirectory)
+    public LocalSourceConnector(Path sourceDirectory, Path dumpDirectory)
     {
-        this.sourceDirectory = Paths.get(sourceDirectory);
-        this.dumpDirectory = Paths.get(dumpDirectory);
+        this.sourceDirectory = sourceDirectory;
+        this.dumpDirectory = dumpDirectory;
+
         if (!Files.isDirectory(this.sourceDirectory))
         {
             throw new IllegalArgumentException("Path is not a directory: " + sourceDirectory);
