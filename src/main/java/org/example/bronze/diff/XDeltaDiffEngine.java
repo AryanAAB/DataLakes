@@ -2,11 +2,22 @@ package org.example.bronze.diff;
 
 import org.example.bronze.util.Constants;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class XDeltaDiffEngine implements DiffEngine
 {
+    private XDeltaDiffEngine() {}
+
+    private static class Holder
+    {
+        private static final XDeltaDiffEngine INSTANCE = new XDeltaDiffEngine();
+    }
+
+    public static XDeltaDiffEngine getInstance()
+    {
+        return Holder.INSTANCE;
+    }
+
     @Override
     public void computeDelta(Path oldFile, Path newFile, Path deltaFile) throws Exception
     {
