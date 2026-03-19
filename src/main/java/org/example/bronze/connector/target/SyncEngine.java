@@ -109,16 +109,38 @@ public class SyncEngine implements SyncEngineInterface
     private Path reconstruct(String fileId) throws Exception
     {
         List<FileVersion> versions = store.getAllVersions(fileId);
-
-        Path current = null;
-
-        for (FileVersion v : versions)
+        if (versions.isEmpty())
+            throw new IllegalStateException("No versions found for file: " + fileId);
+        
+        int snapshotIndex = -1;
+        for (int i = versions.size() - 1; i >= 0; i--)
         {
+            if (versions.get(i).isFullSnapshot())
+            {
+                snapshotIndex = i;
+                break;
+            }
+        }
+        if (snapshotIndex == -1)
+            throw new IllegalStateException("No full snapshot found for file: " + fileId);
+    
+        FileVersion snapshot = versions.get(snapshotIndex);
+        Path current = Files.copy(
+                Path.of(snapshot.filePath()),
+                Files.createTempFile("base", ".tmp"),
+                StandardCopyOption.REPLACE_EXISTING
+        );
+    
+        for (int i = snapshotIndex + 1; i < versions.size(); i++)
+        {
+            FileVersion v = versions.get(i);
             if (v.isFullSnapshot())
             {
-                current = Files.copy(Path.of(v.filePath()),
+                current = Files.copy(
+                        Path.of(v.filePath()),
                         Files.createTempFile("base", ".tmp"),
-                        StandardCopyOption.REPLACE_EXISTING);
+                        StandardCopyOption.REPLACE_EXISTING
+                );
             }
             else
             {
@@ -127,7 +149,7 @@ public class SyncEngine implements SyncEngineInterface
                 current = next;
             }
         }
-
+    
         return current;
     }
 }
