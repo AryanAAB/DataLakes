@@ -41,6 +41,12 @@ public class LocalTargetConnector implements TargetConnector
     @Override
     public InputStream openFile(FileMetadata file) throws IOException
     {
-        return Files.newInputStream(root.resolve(file.path()));
+        return Files.newInputStream(resolve(file));
+    }
+
+    @Override
+    public Path resolve(FileMetadata file)
+    {
+        return root.resolve(file.path());
     }
 }

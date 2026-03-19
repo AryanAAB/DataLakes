@@ -7,7 +7,6 @@ import org.example.bronze.metadata.VersionStore;
 import org.example.bronze.util.Constants;
 import org.example.bronze.util.HashUtil;
 
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -18,7 +17,7 @@ import java.util.stream.Stream;
 
 public class SyncEngine
 {
-    private static final int SNAPSHOT_INTERVAL = 5;
+    private static final int SNAPSHOT_INTERVAL = 2;
 
     private final TargetConnector source;
     private final VersionStore store;
@@ -57,7 +56,7 @@ public class SyncEngine
     {
         String fileId = meta.path();
 
-        Path newFile = materialize(meta);
+        Path newFile = source.resolve(meta);
 
         String newHash = HashUtil.sha256(newFile);
         long newSize = Files.size(newFile);
@@ -99,18 +98,6 @@ public class SyncEngine
         }
     }
 
-    private Path materialize(FileMetadata meta) throws Exception
-    {
-        Path temp = Files.createTempFile("sync-", ".tmp");
-
-        try (InputStream in = source.openFile(meta))
-        {
-            Files.copy(in, temp, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return temp;
-    }
-
     private Path allocate(String fileId, int version, boolean full) throws Exception
     {
         Path dir = targetRoot.resolve(fileId);
@@ -127,7 +114,6 @@ public class SyncEngine
 
         for (FileVersion v : versions)
         {
-
             if (v.isFullSnapshot())
             {
                 current = Files.copy(Path.of(v.filePath()),
