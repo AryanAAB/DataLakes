@@ -20,7 +20,6 @@ public class SyncEngine implements SyncEngineInterface
 
     private final TargetConnector source;
     private final VersionStore store;
-    private final DiffEngine diff;
     private final Path targetRoot;
     private final ProcessEngineInterface processEngine;
 
