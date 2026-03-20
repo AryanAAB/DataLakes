@@ -29,12 +29,10 @@ public class ProcessEngine implements ProcessEngineInterface
         this->targetRoot = targetRoot;
     }
     
-    public void process(FileMetadata meta, VersionStore store) throws Exception
+    public void process(FileMetadata meta, VersionStore store, Path newFilePath) throws Exception
     {
         String fileId = meta.path();
         String fileName = meta.fileName();
-
-        Path newFilePath = source.resolve(meta);
 
         String newHash = HashUtil.sha256(newFilePath);
         long newSize = Files.size(newFilePath);
