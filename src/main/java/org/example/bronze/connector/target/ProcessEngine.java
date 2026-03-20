@@ -17,20 +17,26 @@ import java.util.stream.Stream;
 public class ProcessEngine implements ProcessEngineInterface
 {    
     private final DiffEngine diff;
-    private Path targetRoot;
+    private Path targetRoot = null;
     
     public ProcessEngine(DiffEngine diff, Path targetRoot)
     {
-        this->diff = diff;
-        this->targetRoot= targetRoot;
+        this.diff = diff;
+        this.targetRoot= targetRoot;
+    }
+
+    public ProcessEngine(DiffEngine diff)
+    {
+        this.diff = diff;
     }
 
     public void setTargetRoot(Path targetRoot){
-        this->targetRoot = targetRoot;
+        this.targetRoot = targetRoot;
     }
     
     public void process(FileMetadata meta, VersionStore store, Path newFilePath) throws Exception
     {
+        if(targetRoot==null) throw RuntimeException("No targetRoot specified.");
         String fileId = meta.path();
         String fileName = meta.fileName();
 
