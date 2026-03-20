@@ -42,7 +42,7 @@ public class SyncEngine implements SyncEngineInterface
             {
                 try
                 {
-                    Path newFilePath = source.resolve(meta);
+                    Path newFilePath = source.resolve(f);
                     processEngine.process(f, store, newFilePath);
                 } catch (Exception e)
                 {
