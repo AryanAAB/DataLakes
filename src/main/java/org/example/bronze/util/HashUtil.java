@@ -9,7 +9,7 @@ public class HashUtil
 {
     public static String sha256(Path path) throws Exception
     {
-        MessageDigest digest = MessageDigest.getInstance(Constants.HASH_ALGORHTM);
+        MessageDigest digest = MessageDigest.getInstance(Constants.HASH_ALGORITHM);
 
         try (InputStream is = Files.newInputStream(path))
         {
