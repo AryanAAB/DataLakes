@@ -30,8 +30,8 @@ public class SyncEngine implements SyncEngineInterface
     {
         this.source = source;
         this.store = store;
-        this.targetRoot = targetRoot;
         this.processEngine = processEngine;
+        this.processEngine.setTargetRoot(targetRoot);
     }
 
     public void sync() throws Exception
