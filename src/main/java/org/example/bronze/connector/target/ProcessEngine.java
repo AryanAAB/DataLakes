@@ -1,3 +1,4 @@
+class ProcessEngine implements ProcessEngineInterface
     private void process(FileMetadata meta) throws Exception
     {
         String fileId = meta.path();
