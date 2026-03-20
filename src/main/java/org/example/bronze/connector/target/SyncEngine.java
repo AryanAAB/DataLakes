@@ -25,13 +25,11 @@ public class SyncEngine implements SyncEngineInterface
 
     public SyncEngine(TargetConnector source,
                       VersionStore store,
-                      DiffEngine diff,
                       Path targetRoot,
                       ProcessEngineInterface processEngine)
     {
         this.source = source;
         this.store = store;
-        this.diff = diff;
         this.targetRoot = targetRoot;
         this.processEngine = processEngine;
     }
