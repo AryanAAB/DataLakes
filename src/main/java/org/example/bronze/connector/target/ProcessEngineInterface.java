@@ -4,6 +4,6 @@ import org.example.bronze.metadata.FileMetadata;
 
 public interface ProcessEngineInterface
 {
-    public void process(FileMetadata meta, VersionStore store) throws Exception;
+    public void process(FileMetadata meta, VersionStore store, Path newFilePath) throws Exception;
 }
 
