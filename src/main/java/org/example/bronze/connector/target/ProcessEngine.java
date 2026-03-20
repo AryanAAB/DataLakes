@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ProcessEngine implements ProcessEngineInterface
+{
     private void process(FileMetadata meta) throws Exception
     {
         String fileId = meta.path();
@@ -89,3 +90,4 @@ public class ProcessEngine implements ProcessEngineInterface
 
         return dir.resolve("v" + version + (full ? ".full" : ".delta"));
     }
+}
