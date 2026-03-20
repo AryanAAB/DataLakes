@@ -42,7 +42,7 @@ public class SyncEngine implements SyncEngineInterface
             {
                 try
                 {
-                    processEngine.process(f);
+                    processEngine.process(f, store);
                 } catch (Exception e)
                 {
                     Constants.logger.error("Processing failed for file " + f.fileName(), e);
