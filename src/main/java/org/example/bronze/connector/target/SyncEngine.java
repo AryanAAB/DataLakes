@@ -42,7 +42,8 @@ public class SyncEngine implements SyncEngineInterface
             {
                 try
                 {
-                    processEngine.process(f, store);
+                    Path newFilePath = source.resolve(meta);
+                    processEngine.process(f, store, newFilePath);
                 } catch (Exception e)
                 {
                     Constants.logger.error("Processing failed for file " + f.fileName(), e);
