@@ -15,8 +15,14 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ProcessEngine implements ProcessEngineInterface
-{
-    private void process(FileMetadata meta) throws Exception
+{    
+    private final DiffEngine diff;
+    public ProcessEngine(DiffEngine diff)
+    {
+        this->diff = diff;
+    }
+    
+    public void process(FileMetadata meta, ) throws Exception
     {
         String fileId = meta.path();
         String fileName = meta.fileName();
