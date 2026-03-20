@@ -35,9 +35,9 @@ public class Main
 
         TargetConnector source = new LocalTargetConnector(dumpPath);
 
-        ProcessEngine processEngine = new ProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine(diff, outputPath);
 
-        SyncEngine engine = new SyncEngine(source, store, diff, outputPath, processEngine);
+        SyncEngine engine = new SyncEngine(source, store, outputPath, processEngine);
 
         engine.sync();
     }
