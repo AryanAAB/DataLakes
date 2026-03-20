@@ -22,16 +22,19 @@ public class SyncEngine implements SyncEngineInterface
     private final VersionStore store;
     private final DiffEngine diff;
     private final Path targetRoot;
+    private final ProcessEngineInterface processEngine;
 
     public SyncEngine(TargetConnector source,
                       VersionStore store,
                       DiffEngine diff,
-                      Path targetRoot)
+                      Path targetRoot,
+                      ProcessEngineInterface processEngine)
     {
         this.source = source;
         this.store = store;
         this.diff = diff;
         this.targetRoot = targetRoot;
+        this.processEngine = processEngine;
     }
 
     public void sync() throws Exception
@@ -42,7 +45,7 @@ public class SyncEngine implements SyncEngineInterface
             {
                 try
                 {
-                    process(f);
+                    processEngine.process(f);
                 } catch (Exception e)
                 {
                     Constants.logger.error("Processing failed for file " + f.fileName(), e);
