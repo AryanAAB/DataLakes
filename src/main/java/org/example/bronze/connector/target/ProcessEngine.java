@@ -29,7 +29,7 @@ public class ProcessEngine implements ProcessEngineInterface
         this->targetRoot = targetRoot;
     }
     
-    public void process(FileMetadata meta, ) throws Exception
+    public void process(FileMetadata meta, VersionStore store) throws Exception
     {
         String fileId = meta.path();
         String fileName = meta.fileName();
