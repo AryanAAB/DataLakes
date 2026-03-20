@@ -17,9 +17,16 @@ import java.util.stream.Stream;
 public class ProcessEngine implements ProcessEngineInterface
 {    
     private final DiffEngine diff;
-    public ProcessEngine(DiffEngine diff)
+    private Path targetRoot;
+    
+    public ProcessEngine(DiffEngine diff, Path targetRoot)
     {
         this->diff = diff;
+        this->targetRoot= targetRoot;
+    }
+
+    public void setTargetRoot(Path targetRoot){
+        this->targetRoot = targetRoot;
     }
     
     public void process(FileMetadata meta, ) throws Exception
