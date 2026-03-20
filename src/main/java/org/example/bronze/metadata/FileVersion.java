@@ -1,8 +1,7 @@
 package org.example.bronze.metadata;
 
-import java.time.Instant;
-
-public record FileVersion(int version, boolean isFullSnapshot, String filePath,
-                          String hash, long size, Instant createdAt)
+public record FileVersion(FileType fileType, Integer version, Integer baseVersion,
+                          String filePath, String hash, Long size)
 {
+
 }

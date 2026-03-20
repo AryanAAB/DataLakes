@@ -2,6 +2,7 @@ package org.example.bronze.connector.target;
 
 import org.example.bronze.diff.DiffEngine;
 import org.example.bronze.metadata.FileMetadata;
+import org.example.bronze.metadata.FileType;
 import org.example.bronze.metadata.FileVersion;
 import org.example.bronze.metadata.VersionStore;
 import org.example.bronze.util.Constants;
@@ -10,8 +11,6 @@ import org.example.bronze.util.HashUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -55,11 +54,12 @@ public class SyncEngine implements SyncEngineInterface
     private void process(FileMetadata meta) throws Exception
     {
         String fileId = meta.path();
+        String fileName = meta.fileName();
 
-        Path newFile = source.resolve(meta);
+        Path newFilePath = source.resolve(meta);
 
-        String newHash = HashUtil.sha256(newFile);
-        long newSize = Files.size(newFile);
+        String newHash = HashUtil.sha256(newFilePath);
+        long newSize = Files.size(newFilePath);
 
         Optional<FileVersion> latestOpt = store.getLatestVersion(fileId);
 
@@ -78,24 +78,44 @@ public class SyncEngine implements SyncEngineInterface
 
         if (latestOpt.isEmpty() || snapshot)
         {
-            Files.move(newFile, versionPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(newFilePath, versionPath, StandardCopyOption.REPLACE_EXISTING);
 
             store.saveNewVersion(fileId,
-                    new FileVersion(nextVersion, true, versionPath.toString(),
-                            newHash, newSize, Instant.now()));
+                    new FileVersion(FileType.CHECKPOINT, nextVersion, null,
+                            versionPath.toString(), newHash, newSize));
         }
         else
         {
-            Path base = latestOpt.get().isFullSnapshot()
-                    ? Path.of(latestOpt.get().filePath())
-                    : reconstruct(fileId);
+            Optional<FileVersion> globalFile = store.getGlobalFile(fileId);
+            Optional<FileVersion> lastCheckpointFile = store.getLatestCheckpointVersion(fileId);
 
-            diff.computeDelta(base, newFile, versionPath);
+            if (globalFile.isEmpty()) throw new RuntimeException("Global file does not exist");
+            else if (lastCheckpointFile.isEmpty()) throw new RuntimeException("Last checkpoint file does not exist");
+
+            diff.computeDelta(Path.of(globalFile.get().filePath()), newFilePath, versionPath);
 
             store.saveNewVersion(fileId,
-                    new FileVersion(nextVersion, false, versionPath.toString(),
-                            newHash, newSize, Instant.now()));
+                    new FileVersion(FileType.DIFF, nextVersion, lastCheckpointFile.get().version(),
+                            versionPath.toString(), newHash, newSize));
         }
+
+        Path globalFilePath = allocateGlobal(fileId);
+
+        Files.move(newFilePath, globalFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+        FileVersion globalFile = new FileVersion(FileType.GLOBAL, null, null,
+                globalFilePath.toString(), newHash, newSize);
+
+        store.saveGlobalFile(fileId, globalFile);
+    }
+
+    private Path allocateGlobal(String fileId) throws Exception
+    {
+        Path dir = targetRoot.resolve(fileId);
+        Files.createDirectories(dir);
+
+        String fileName = Path.of(fileId).getFileName().toString();
+        return dir.resolve(fileName);
     }
 
     private Path allocate(String fileId, int version, boolean full) throws Exception
@@ -104,52 +124,5 @@ public class SyncEngine implements SyncEngineInterface
         Files.createDirectories(dir);
 
         return dir.resolve("v" + version + (full ? ".full" : ".delta"));
-    }
-
-    private Path reconstruct(String fileId) throws Exception
-    {
-        List<FileVersion> versions = store.getAllVersions(fileId);
-        if (versions.isEmpty())
-            throw new IllegalStateException("No versions found for file: " + fileId);
-        
-        int snapshotIndex = -1;
-        for (int i = versions.size() - 1; i >= 0; i--)
-        {
-            if (versions.get(i).isFullSnapshot())
-            {
-                snapshotIndex = i;
-                break;
-            }
-        }
-        if (snapshotIndex == -1)
-            throw new IllegalStateException("No full snapshot found for file: " + fileId);
-    
-        FileVersion snapshot = versions.get(snapshotIndex);
-        Path current = Files.copy(
-                Path.of(snapshot.filePath()),
-                Files.createTempFile("base", ".tmp"),
-                StandardCopyOption.REPLACE_EXISTING
-        );
-    
-        for (int i = snapshotIndex + 1; i < versions.size(); i++)
-        {
-            FileVersion v = versions.get(i);
-            if (v.isFullSnapshot())
-            {
-                current = Files.copy(
-                        Path.of(v.filePath()),
-                        Files.createTempFile("base", ".tmp"),
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-            }
-            else
-            {
-                Path next = Files.createTempFile("patch", ".tmp");
-                diff.applyDelta(current, Path.of(v.filePath()), next);
-                current = next;
-            }
-        }
-    
-        return current;
     }
 }

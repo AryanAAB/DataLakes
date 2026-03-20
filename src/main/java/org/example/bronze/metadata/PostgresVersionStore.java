@@ -6,9 +6,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class PostgresVersionStore implements VersionStore
@@ -25,6 +22,27 @@ public class PostgresVersionStore implements VersionStore
     {
         String sql = Constants.GET_LATEST_VERSION;
 
+        return get(sql, fileId);
+    }
+
+    @Override
+    public Optional<FileVersion> getLatestCheckpointVersion(String fileId)
+    {
+        String sql = Constants.GET_LATEST_CHECKPOINT_VERSION;
+
+        return get(sql, fileId);
+    }
+
+    @Override
+    public Optional<FileVersion> getGlobalFile(String fileId)
+    {
+        String sql = Constants.GET_GLOBAL_FILE;
+
+        return get(sql, fileId);
+    }
+
+    private Optional<FileVersion> get(String sql, String fileId)
+    {
         try (Connection c = ds.getConnection();
              PreparedStatement ps = c.prepareStatement(sql))
         {
@@ -38,7 +56,7 @@ public class PostgresVersionStore implements VersionStore
             }
         } catch (Exception e)
         {
-            Constants.logger.error("Could not get latest version", e);
+            Constants.logger.error("Could not get file", e);
             throw new RuntimeException(e);
         }
 
@@ -46,48 +64,31 @@ public class PostgresVersionStore implements VersionStore
     }
 
     @Override
-    public List<FileVersion> getAllVersions(String fileId)
+    public void saveNewVersion(String fileId, FileVersion v)
     {
-        List<FileVersion> list = new ArrayList<>();
-
-        String sql = Constants.GET_ALL_VERSIONS;
-
-        try (Connection c = ds.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql))
-        {
-            ps.setString(1, fileId);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next())
-            {
-                list.add(map(rs));
-            }
-
-        } catch (Exception e)
-        {
-            Constants.logger.error("Could not get all versions", e);
-            throw new RuntimeException(e);
-        }
-
-        return list;
+        String sql = Constants.SAVE_VERSION_FILE;
+        save(sql, fileId, v);
     }
 
     @Override
-    public void saveNewVersion(String fileId, FileVersion v)
+    public void saveGlobalFile(String fileId, FileVersion v)
     {
-        String sql = Constants.SAVE_NEW_VERSION;
+        String sql = Constants.SAVE_GLOBAL_FILE;
+        save(sql, fileId, v);
+    }
 
+    private void save(String sql, String fileId, FileVersion v)
+    {
         try (Connection c = ds.getConnection();
              PreparedStatement ps = c.prepareStatement(sql))
         {
-
             ps.setString(1, fileId);
-            ps.setInt(2, v.version());
-            ps.setBoolean(3, v.isFullSnapshot());
-            ps.setString(4, v.filePath());
-            ps.setString(5, v.hash());
-            ps.setLong(6, v.size());
-            ps.setTimestamp(7, Timestamp.from(v.createdAt()));
+            ps.setString(2, v.fileType().toString());
+            ps.setObject(3, v.version());
+            ps.setObject(4, v.baseVersion());
+            ps.setString(5, v.filePath());
+            ps.setString(6, v.hash());
+            ps.setLong(7, v.size());
 
             ps.executeUpdate();
 
@@ -100,13 +101,16 @@ public class PostgresVersionStore implements VersionStore
 
     private FileVersion map(ResultSet rs) throws Exception
     {
+        Integer version = rs.getObject("version", Integer.class);
+        Integer baseVersion = rs.getObject("base_version", Integer.class);
+
         return new FileVersion(
-                rs.getInt("version"),
-                rs.getBoolean("is_full"),
+                FileType.valueOf(rs.getString("file_type")),
+                version,
+                baseVersion,
                 rs.getString("file_path"),
                 rs.getString("hash"),
-                rs.getLong("size"),
-                rs.getTimestamp("created_at").toInstant()
+                rs.getLong("size")
         );
     }
 }
