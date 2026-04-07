@@ -1,4 +1,4 @@
-package org.example.bronze.ingestion.pipeline.pipeline;
+package org.example.bronze.ingestion.pipeline;
 
 public interface IngestionPipeline
 {
