@@ -1,7 +1,7 @@
-package org.example.bronze.connector;
+package org.example.bronze.ingestion.connector;
 
-import org.example.bronze.connector.exception.ResourceNotFoundException;
-import org.example.bronze.connector.exception.SourceConnectorException;
+import org.example.bronze.ingestion.connector.exception.ResourceNotFoundException;
+import org.example.bronze.ingestion.connector.exception.SourceConnectorException;
 
 import java.io.InputStream;
 import java.util.List;
@@ -23,5 +23,5 @@ public interface SourceConnector extends AutoCloseable
         return listResources();
     }
 
-    InputStream fetchResource(String resourceId) throws SourceConnectorException, ResourceNotFoundException;
+    InputStream fetchResource(String resourceId) throws ResourceNotFoundException;
 }

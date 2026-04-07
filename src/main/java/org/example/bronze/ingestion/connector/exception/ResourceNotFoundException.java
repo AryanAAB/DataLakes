@@ -1,4 +1,4 @@
-package org.example.bronze.connector.exception;
+package org.example.bronze.ingestion.connector.exception;
 
 public class ResourceNotFoundException extends SourceConnectorException
 {
