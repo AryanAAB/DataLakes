@@ -40,3 +40,4 @@ build/
 /src/main/resources/application.properties
 /src/main/resources/stage
 /src/main/resources/datalakes-492703-21deb683480d.json
+/src/main/resources/configFiles/drivePipeline.json
