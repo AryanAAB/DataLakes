@@ -2,26 +2,20 @@ package org.example.bronze.ingestion.connector;
 
 import org.example.bronze.ingestion.connector.exception.ResourceNotFoundException;
 import org.example.bronze.ingestion.connector.exception.SourceConnectorException;
+import org.example.bronze.ingestion.metadata.FileMetadata;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
-public interface SourceConnector extends AutoCloseable
+public interface SourceConnector
 {
     void connect() throws SourceConnectorException;
 
-    @Override
     void close() throws SourceConnectorException;
 
     boolean isConnected();
 
-    List<String> listResources() throws SourceConnectorException;
+    List<FileMetadata> listResources() throws SourceConnectorException;
 
-    default List<String> listResources(Map<String, Object> filters) throws SourceConnectorException
-    {
-        return listResources();
-    }
-
-    InputStream fetchResource(String resourceId) throws ResourceNotFoundException;
+    InputStream fetchResource(FileMetadata resource) throws SourceConnectorException, ResourceNotFoundException;
 }

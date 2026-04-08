@@ -2,7 +2,9 @@ package org.example.bronze.ingestion.pipeline;
 
 public interface IngestionPipeline
 {
-    void run() throws Exception;
+    void run(int numThreads) throws Exception;
+
+    Long getId();
 
     String getName();
 }
