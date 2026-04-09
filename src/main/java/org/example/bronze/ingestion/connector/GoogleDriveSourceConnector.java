@@ -62,6 +62,7 @@ public class GoogleDriveSourceConnector implements SourceConnector
                         .setCreatedTime(Instant.parse(file.getCreatedTime().toStringRfc3339()))
                         .setModifiedTime(Instant.parse(file.getModifiedTime().toStringRfc3339()))
                 );
+                Constants.logger.info("File {}'s metadata loaded.", file.getId());
             }
             return metadata;
         } catch (Exception e)

@@ -13,8 +13,7 @@ public class Main
         List<IngestionPipeline> ingestion = PipelineRepository.loadActivePipelines();
 
         PipelineManager pipelineManager = new PipelineManager();
-
-        ingestion.forEach(pipelineManager::registerPipeline);
+        pipelineManager.registerPipeline(ingestion);
 
         for (IngestionPipeline pipeline : ingestion)
             pipelineManager.triggerNow(pipeline.getId(), 5);

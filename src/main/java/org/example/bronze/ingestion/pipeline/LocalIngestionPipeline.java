@@ -50,7 +50,11 @@ public class LocalIngestionPipeline implements IngestionPipeline
         {
             sourceConnector.connect();
 
+            Constants.logger.info("Loading resources from source for pipeline {}", pipelineId);
+
             List<FileMetadata> resources = sourceConnector.listResources();
+
+            Constants.logger.info("Resources loaded from source for pipeline {}", pipelineId);
 
             List<Future<?>> futures = new ArrayList<>();
 
@@ -84,6 +88,8 @@ public class LocalIngestionPipeline implements IngestionPipeline
                         }
 
                         addResource(resource);
+                        Constants.logger.info("Resource {} with name {} extracted from source for pipeline {}",
+                                resource.getId(), resource.getName(), pipelineId);
                     })));
 
             for (Future<?> future : futures)

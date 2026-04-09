@@ -1,6 +1,9 @@
 package org.example.bronze.ingestion.pipeline;
 
+import org.example.bronze.util.Constants;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PipelineManager
@@ -12,12 +15,22 @@ public class PipelineManager
         pipelines = new HashMap<>();
     }
 
-    public boolean registerPipeline(IngestionPipeline pipeline)
+    public void registerPipeline(IngestionPipeline pipeline)
     {
-        if (pipeline == null) return false;
-        if (pipelines.containsKey(pipeline.getId())) return true;
+        if (pipeline == null || pipelines.containsKey(pipeline.getId()))
+        {
+            Constants.logger.warn("Pipeline {} already exists or is null", pipeline == null ? "null" : pipeline.getId());
+            return;
+        }
 
-        return pipelines.put(pipeline.getId(), pipeline) == null;
+        pipelines.put(pipeline.getId(), pipeline);
+    }
+
+    public void registerPipeline(List<IngestionPipeline> pipelines)
+    {
+        if (pipelines == null) return;
+
+        pipelines.forEach(this::registerPipeline);
     }
 
     public void triggerNow(Long id, int numThreads) throws Exception

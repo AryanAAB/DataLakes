@@ -42,6 +42,7 @@ public class PipelineRepository
                     if (pipeline != null)
                     {
                         pipelines.add(pipeline);
+                        Constants.logger.info("Pipeline {} loaded", pipelineId);
                     }
                     else
                     {
