@@ -16,8 +16,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +71,7 @@ public class LocalIngestionPipeline implements IngestionPipeline
                                         resource.setName(resource.getName() + extension);
                                 } catch (MimeTypeException e)
                                 {
-                                    e.printStackTrace();
+                                    Constants.logger.error(e.getMessage(), e);
                                 }
 
                                 Path target = outputDirectory.resolve(resource.getName());
@@ -95,8 +93,7 @@ public class LocalIngestionPipeline implements IngestionPipeline
                     future.get();
                 } catch (ExecutionException e)
                 {
-                    futures.forEach(f -> f.cancel(true));
-                    throw new Exception("Pipeline execution failed", e.getCause());
+                    Constants.logger.error(e.getMessage(), e);
                 }
             }
         } finally
@@ -108,8 +105,8 @@ public class LocalIngestionPipeline implements IngestionPipeline
 
     private void addResource(FileMetadata resource)
     {
-        try(Connection conn = DatabaseConfig.getDataSource().getConnection();
-            PreparedStatement ps = conn.prepareStatement(Constants.ADD_METADATA))
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement ps = conn.prepareStatement(Constants.ADD_METADATA))
         {
             ps.setLong(1, getId());
             ps.setString(2, resource.getId());
@@ -122,8 +119,7 @@ public class LocalIngestionPipeline implements IngestionPipeline
             ps.setObject(9, Timestamp.from(resource.getModifiedTime()));
 
             ps.executeUpdate();
-        }
-        catch (SQLException e)
+        } catch (SQLException e)
         {
             throw new RuntimeException("Failed to insert FileMetadata: " + resource, e);
         }

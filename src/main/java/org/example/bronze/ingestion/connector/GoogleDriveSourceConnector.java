@@ -7,6 +7,7 @@ import com.google.api.services.drive.model.FileList;
 import org.example.bronze.ingestion.connector.exception.ResourceNotFoundException;
 import org.example.bronze.ingestion.connector.exception.SourceConnectorException;
 import org.example.bronze.ingestion.metadata.FileMetadata;
+import org.example.bronze.util.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class GoogleDriveSourceConnector implements SourceConnector
     }
 
     @Override
-    public void connect() throws SourceConnectorException
+    public void connect()
     {
     }
 
@@ -65,6 +66,7 @@ public class GoogleDriveSourceConnector implements SourceConnector
             return metadata;
         } catch (Exception e)
         {
+            Constants.logger.error(e.getMessage(), e);
             throw new SourceConnectorException("Failed to list resources", e);
         }
     }
@@ -97,6 +99,7 @@ public class GoogleDriveSourceConnector implements SourceConnector
 
         } catch (GoogleJsonResponseException e)
         {
+            Constants.logger.error(e.getMessage(), e);
             if (e.getStatusCode() == 404)
             {
                 throw new ResourceNotFoundException("Resource not found: " + metadata.getId(), e);
@@ -104,6 +107,7 @@ public class GoogleDriveSourceConnector implements SourceConnector
             throw new SourceConnectorException("Failed to fetch resource: " + metadata.getId(), e);
         } catch (Exception e)
         {
+            Constants.logger.error(e.getMessage(), e);
             throw new SourceConnectorException("Failed to fetch resource: " + metadata.getId(), e);
         }
     }

@@ -45,18 +45,18 @@ public class PipelineRepository
                     }
                     else
                     {
-                        System.err.println("Unsupported connector for pipelineId " + pipelineId);
+                        Constants.logger.error("Pipeline {} not found", pipelineId);
                     }
 
                 } catch (Exception e)
                 {
-                    System.err.println("Failed to process pipelineId " + pipelineId + ": " + e.getMessage());
+                    Constants.logger.error("Error reading pipeline", e);
                 }
             }
 
         } catch (Exception e)
         {
-            System.err.println("Failed to fetch pipelines from DB: " + e.getMessage());
+            Constants.logger.error("Error reading pipeline", e);
         }
 
         return pipelines;

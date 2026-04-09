@@ -18,6 +18,7 @@ public class AppConfig
 
         } catch (Exception e)
         {
+            Constants.logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
