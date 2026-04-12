@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.api.services.drive.Drive;
 import org.example.bronze.ingestion.connector.GoogleDriveSourceConnector;
 import org.example.bronze.ingestion.connector.SourceConnector;
-import org.example.bronze.util.DriveFactory;
+import org.example.bronze.ingestion.util.DriveFactory;
 
 import java.nio.file.Path;
 

@@ -5,6 +5,7 @@ import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.example.bronze.ingestion.connector.SourceConnector;
 import org.example.bronze.ingestion.metadata.FileMetadata;
+import org.example.bronze.ingestion.util.IngestionConstants;
 import org.example.bronze.util.Constants;
 import org.example.bronze.util.DatabaseConfig;
 
@@ -112,7 +113,7 @@ public class LocalIngestionPipeline implements IngestionPipeline
     private void addResource(FileMetadata resource)
     {
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(Constants.ADD_METADATA))
+             PreparedStatement ps = conn.prepareStatement(IngestionConstants.ADD_METADATA))
         {
             ps.setLong(1, getId());
             ps.setString(2, resource.getId());

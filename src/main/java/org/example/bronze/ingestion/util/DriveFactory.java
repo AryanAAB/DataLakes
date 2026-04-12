@@ -1,4 +1,4 @@
-package org.example.bronze.util;
+package org.example.bronze.ingestion.util;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;

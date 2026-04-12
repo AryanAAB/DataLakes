@@ -2,6 +2,7 @@ package org.example.bronze.ingestion.pipeline;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.bronze.ingestion.util.IngestionConstants;
 import org.example.bronze.util.Constants;
 import org.example.bronze.util.DatabaseConfig;
 
@@ -21,7 +22,7 @@ public class PipelineRepository
     public static List<IngestionPipeline> loadActivePipelines()
     {
         List<IngestionPipeline> pipelines = new ArrayList<>();
-        String query = Constants.GET_PIPELINES;
+        String query = IngestionConstants.GET_PIPELINES;
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
