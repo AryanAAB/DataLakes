@@ -6,7 +6,7 @@ import java.time.Instant;
 
 public class FileMetadata
 {
-    private String id, parentId, name, mimeType, exportMimeType;
+    private String id, parentId, name, path, mimeType, exportMimeType;
     private Long size;
     private Instant createdTime, modifiedTime;
 
@@ -29,6 +29,12 @@ public class FileMetadata
     public FileMetadata setName(String name)
     {
         this.name = name;
+        return this;
+    }
+
+    public FileMetadata setPath(String path)
+    {
+        this.path = path;
         return this;
     }
 
@@ -77,6 +83,11 @@ public class FileMetadata
         return name;
     }
 
+    public String getPath()
+    {
+        return path;
+    }
+
     public String getMimeType()
     {
         return mimeType;
@@ -106,8 +117,8 @@ public class FileMetadata
     public String toString()
     {
         return "[id=" + id + ", name=" + name + ", parentId=" + parentId +
-                ", mimeType=" + mimeType + ", exportMimeType=" + exportMimeType
-                + ", size=" + size + ", createdTime=" + createdTime
-                + ", modifiedTime=" + modifiedTime + "]";
+                ", path=" + path + ", mimeType=" + mimeType
+                + ", exportMimeType=" + exportMimeType + ", size=" + size
+                + ", createdTime=" + createdTime + ", modifiedTime=" + modifiedTime + "]";
     }
 }

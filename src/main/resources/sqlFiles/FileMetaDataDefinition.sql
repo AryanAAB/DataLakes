@@ -12,9 +12,11 @@ CREATE TABLE IF NOT EXISTS public."FileMetaData"
     "mimeType" text COLLATE pg_catalog."default" NOT NULL,
     "exportMimeType" text COLLATE pg_catalog."default",
     size bigint,
+    path text COLLATE pg_catalog."default",
     "createdTime" timestamp with time zone NOT NULL,
     "modifiedTime" timestamp with time zone NOT NULL,
     CONSTRAINT "FileMetaData_pkey" PRIMARY KEY ("globalFileId"),
+    CONSTRAINT "FileMetaData_path_key" UNIQUE (path),
     CONSTRAINT unique_pipeline_file UNIQUE ("pipelineId", id),
     CONSTRAINT fk_metadata_parent FOREIGN KEY ("pipelineId")
         REFERENCES public."Pipeline" ("pipelineId") MATCH SIMPLE

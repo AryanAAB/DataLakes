@@ -57,7 +57,7 @@ public class LocalSourceConnector implements SourceConnector
                     {
                         totalFiles.getAndIncrement();
                         Files.createDirectories(targetPath.getParent());
-                        Files.copy(
+                        Files.move(
                                 sourcePath,
                                 targetPath,
                                 StandardCopyOption.REPLACE_EXISTING,

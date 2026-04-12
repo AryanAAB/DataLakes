@@ -1,5 +1,6 @@
 package org.example.bronze.versioning;
 
+import org.example.bronze.util.Constants;
 import org.example.bronze.util.DatabaseConfig;
 import org.example.bronze.versioning.connector.source.LocalSourceConnector;
 import org.example.bronze.versioning.connector.source.SourceConnector;
@@ -18,25 +19,22 @@ public class Main
 {
     public static void main(String[] args) throws Exception
     {
-        Path inputPath = Path.of("src/main/resources/input");
+        Path inputPath = Path.of(Constants.PIPELINE_STAGING_DIRECTORY);
 
-        Path dumpPath = Path.of("src/main/resources/dump");
-        Path outputPath = Path.of("src/main/resources/bronze");
+        //Path dumpPath = Path.of(Constants.VERSION_STAGING_DIRECTORY);
+        //Path outputPath = Path.of("src/main/resources/bronze");
 
-        Files.createDirectories(dumpPath);
-        Files.createDirectories(outputPath);
+//        SourceConnector sc = new LocalSourceConnector(inputPath, dumpPath);
+//        sc.readAndDump();
 
-        SourceConnector sc = new LocalSourceConnector(inputPath, dumpPath);
-        sc.readAndDump();
-
-        DataSource ds = DatabaseConfig.getDataSource();
-        PostgresVersionStore store = new PostgresVersionStore(ds);
-        DiffEngine diff = HDiffEngine.getInstance();
-
-        TargetConnector source = new LocalTargetConnector(dumpPath);
-
-        SyncEngine engine = new SyncEngine(source, store, diff, outputPath);
-
-        engine.sync();
+//        DataSource ds = DatabaseConfig.getDataSource();
+//        PostgresVersionStore store = new PostgresVersionStore(ds);
+//        DiffEngine diff = HDiffEngine.getInstance();
+//
+//        TargetConnector source = new LocalTargetConnector(dumpPath);
+//
+//        SyncEngine engine = new SyncEngine(source, store, diff, outputPath);
+//
+//        engine.sync();
     }
 }

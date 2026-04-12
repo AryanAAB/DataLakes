@@ -13,10 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +59,16 @@ public class LocalIngestionPipeline implements IngestionPipeline
             resources.forEach(resource ->
                     futures.add(executor.submit(() ->
                     {
+                        try
+                        {
+                            if(isSameModifiedTime(resource))
+                                return;
+                        }
+                        catch(Exception e)
+                        {
+                            Constants.logger.error(e.getMessage());
+                        }
+
                         try (InputStream in = sourceConnector.fetchResource(resource))
                         {
                             if (in != null)
@@ -79,9 +86,12 @@ public class LocalIngestionPipeline implements IngestionPipeline
                                     Constants.logger.error(e.getMessage(), e);
                                 }
 
-                                Path target = outputDirectory.resolve(resource.getName());
+                                Path targetPath = outputDirectory.resolve(resource.getId());
+                                Path target = targetPath.resolve(resource.getName());
                                 Files.createDirectories(target.getParent());
                                 Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+
+                                resource.setPath(target.toAbsolutePath().toString());
                             }
                         } catch (Exception e)
                         {
@@ -119,16 +129,31 @@ public class LocalIngestionPipeline implements IngestionPipeline
             ps.setString(2, resource.getId());
             ps.setString(3, resource.getParentId());
             ps.setString(4, resource.getName());
-            ps.setString(5, resource.getMimeType());
-            ps.setString(6, resource.getExportMimeType());
-            ps.setObject(7, resource.getSize());
-            ps.setTimestamp(8, Timestamp.from(resource.getCreatedTime()));
-            ps.setObject(9, Timestamp.from(resource.getModifiedTime()));
+            ps.setString(5, resource.getPath());
+            ps.setString(6, resource.getMimeType());
+            ps.setString(7, resource.getExportMimeType());
+            ps.setObject(8, resource.getSize());
+            ps.setTimestamp(9, Timestamp.from(resource.getCreatedTime()));
+            ps.setObject(10, Timestamp.from(resource.getModifiedTime()));
 
             ps.executeUpdate();
         } catch (SQLException e)
         {
             throw new RuntimeException("Failed to insert FileMetadata: " + resource, e);
+        }
+    }
+
+    private boolean isSameModifiedTime(FileMetadata resource) throws SQLException
+    {
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement ps = conn.prepareStatement(IngestionConstants.CHECK_MODIFIED))
+        {
+            ps.setLong(1, getId());
+            ps.setString(2, resource.getId());
+            ps.setTimestamp(3, Timestamp.from(resource.getModifiedTime()));
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
         }
     }
 
