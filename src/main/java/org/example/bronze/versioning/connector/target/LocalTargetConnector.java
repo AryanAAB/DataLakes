@@ -1,5 +1,6 @@
 package org.example.bronze.versioning.connector.target;
 
+import org.example.bronze.util.Constants;
 import org.example.bronze.util.DatabaseConfig;
 import org.example.bronze.versioning.metadata.FileMetadata;
 import org.example.bronze.versioning.util.VersioningConstants;
@@ -28,6 +29,8 @@ public class LocalTargetConnector implements TargetConnector
     public Stream<FileMetadata> discoverFiles() throws IOException
     {
         List<FileMetadata> result = new ArrayList<>();
+
+        Constants.logger.info("Fetching all files for versioning");
 
         try (Connection connection = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = connection.prepareStatement(VersioningConstants.GET_ALL_FILES);

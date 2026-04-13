@@ -36,7 +36,7 @@ public class HDiffEngine implements DiffEngine
 
         if (p.waitFor() != 0)
         {
-            Constants.logger.error("xdelta encode failed for file " + oldFile + " to " + newFile + " into " + deltaFile + ".");
+            Constants.logger.error("xdelta encode failed for file {} to {} into {}.", oldFile, newFile, deltaFile);
             throw new RuntimeException("xdelta encode failed.");
         }
     }
@@ -53,7 +53,7 @@ public class HDiffEngine implements DiffEngine
 
         if (p.waitFor() != 0)
         {
-            Constants.logger.error("xdelta decode failed for file " + baseFile + " to " + deltaFile + " into " + outputFile + ".");
+            Constants.logger.error("xdelta decode failed for file {} to {} into {}.", baseFile, deltaFile, outputFile);
             throw new RuntimeException("xdelta decode failed.");
         }
     }

@@ -8,7 +8,6 @@ import org.example.bronze.versioning.metadata.FileType;
 import org.example.bronze.versioning.metadata.FileVersion;
 import org.example.bronze.versioning.metadata.VersionStore;
 import org.example.bronze.versioning.util.HashUtil;
-import org.example.bronze.versioning.util.VersioningConstants;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,8 +50,7 @@ public class SyncEngine implements Syncable
                     Constants.logger.error("Processing failed for file {}", f.fileId(), e);
                 }
             });
-        }
-        catch(Exception e)
+        } catch (Exception e)
         {
             Constants.logger.error("No files found", e);
         }
@@ -61,6 +59,8 @@ public class SyncEngine implements Syncable
     private void process(FileMetadata meta) throws Exception
     {
         long fileId = meta.fileId();
+
+        Constants.logger.info("Processing Versioning of file {}", fileId);
 
         Path newFilePath = source.resolve(meta);
 
@@ -74,7 +74,10 @@ public class SyncEngine implements Syncable
             FileVersion latest = latestOpt.get();
 
             if (latest.hash().equals(newHash) && latest.size() == newSize)
+            {
+                Constants.logger.info("Latest file already present. Skipping file {}", fileId);
                 return;
+            }
         }
 
         int nextVersion = latestOpt.map(v -> v.version() + 1).orElse(0);
@@ -89,6 +92,8 @@ public class SyncEngine implements Syncable
             store.saveNewVersion(fileId,
                     new FileVersion(FileType.CHECKPOINT, nextVersion, null,
                             versionPath.toString(), newHash, newSize));
+
+            Constants.logger.info("Added Checkpoint file for file {}", fileId);
         }
         else
         {
@@ -103,6 +108,8 @@ public class SyncEngine implements Syncable
             store.saveNewVersion(fileId,
                     new FileVersion(FileType.DIFF, nextVersion, lastCheckpointFile.get().version(),
                             versionPath.toString(), newHash, newSize));
+
+            Constants.logger.info("Added Diff file for file {}", fileId);
         }
 
         Path globalFilePath = allocateGlobal(meta.filePath());
@@ -113,6 +120,8 @@ public class SyncEngine implements Syncable
                 globalFilePath.toString(), newHash, newSize);
 
         store.saveGlobalFile(fileId, globalFile);
+
+        Constants.logger.info("Added global file for file {}", fileId);
     }
 
     private Path allocateGlobal(String filePath) throws Exception
