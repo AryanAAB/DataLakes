@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS public.mappings
 (
-    mapping_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    mapping_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     file_id bigint NOT NULL,
     schema_id character varying(255) COLLATE pg_catalog."default" NOT NULL,
     created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
