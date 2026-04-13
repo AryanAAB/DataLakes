@@ -38,6 +38,7 @@ build/
 .DS_Store
 
 /src/main/resources/application.properties
-/src/main/resources/pipeline
+/src/main/resources/pipeline/
+/src/main/resources/schemas/
 /src/main/resources/datalakes-492703-21deb683480d.json
 /src/main/resources/configFiles/

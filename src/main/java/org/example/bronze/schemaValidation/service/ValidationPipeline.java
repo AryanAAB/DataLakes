@@ -2,59 +2,79 @@ package org.example.bronze.schemaValidation.service;
 
 import org.example.bronze.schemaValidation.db.MappingRepository;
 import org.example.bronze.schemaValidation.model.SchemaDefinition;
+import org.example.bronze.schemaValidation.util.ValidationConstants;
 import org.example.bronze.schemaValidation.validator.SchemaValidator;
 import org.example.bronze.schemaValidation.validator.ValidationResult;
 import org.example.bronze.schemaValidation.validator.ValidatorFactory;
 import org.example.bronze.util.Constants;
+import org.example.bronze.util.DatabaseConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class ValidationPipeline
 {
     private final List<SchemaDefinition> schemaDefinitions;
     private final ValidatorFactory validatorFactory;
-    private final FileRouter fileRouter;
     private final MappingRepository mappingRepository;
     private final SchemaSelectionStrategy schemaSelectionStrategy;
 
     public ValidationPipeline(
             List<SchemaDefinition> schemaDefinitions,
             ValidatorFactory validatorFactory,
-            FileRouter fileRouter,
             MappingRepository mappingRepository
     )
     {
-        this(schemaDefinitions, validatorFactory, fileRouter, mappingRepository, new SchemaSelectionStrategy());
+        this(schemaDefinitions, validatorFactory, mappingRepository, new SchemaSelectionStrategy());
     }
 
     ValidationPipeline(
             List<SchemaDefinition> schemaDefinitions,
             ValidatorFactory validatorFactory,
-            FileRouter fileRouter,
             MappingRepository mappingRepository,
             SchemaSelectionStrategy schemaSelectionStrategy
     )
     {
         this.schemaDefinitions = List.copyOf(schemaDefinitions);
         this.validatorFactory = validatorFactory;
-        this.fileRouter = fileRouter;
         this.mappingRepository = mappingRepository;
         this.schemaSelectionStrategy = schemaSelectionStrategy;
     }
 
     public void run() throws Exception
     {
-        try (Stream<Path> stream = Files.walk(Paths.get(Constants.PIPELINE_STAGING_DIRECTORY)))
+        process();
+    }
+
+    private void process() throws Exception
+    {
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(ValidationConstants.GET_UNACCEPTED_SQL);
+             ResultSet rs = stmt.executeQuery())
         {
-            stream.filter(Files::isRegularFile)
-                    .sorted(Comparator.comparing(path -> path.getFileName().toString()))
-                    .forEach(this::processFileSafely);
+            while (rs.next())
+            {
+                String pathStr = rs.getString("path");
+
+                if (pathStr == null) continue;
+
+                Path file = Paths.get(pathStr);
+
+                if (Files.isRegularFile(file))
+                {
+                    processFileSafely(file);
+                }
+                else
+                {
+                    // optional: log missing or invalid file
+                }
+            }
         }
     }
 
@@ -66,13 +86,6 @@ public final class ValidationPipeline
         } catch (Exception exception)
         {
             System.out.printf("Failed to process %s: %s%n", file.getFileName(), exception.getMessage());
-            try
-            {
-                fileRouter.routeRejected(file);
-            } catch (IOException moveException)
-            {
-                throw new RuntimeException("Unable to move failed file to rejected folder: " + file, moveException);
-            }
         }
     }
 
@@ -87,11 +100,10 @@ public final class ValidationPipeline
 
             if (result.matched())
             {
-                Path acceptedFile = fileRouter.routeAccepted(file);
-                persistMappingSafely(acceptedFile, schemaDefinition);
+                persistMappingSafely(file, schemaDefinition);
                 System.out.printf(
                         "Accepted %s with schema %s%n",
-                        acceptedFile.getFileName(),
+                        file.getFileName(),
                         schemaDefinition.id()
                 );
                 return;
@@ -105,15 +117,14 @@ public final class ValidationPipeline
             );
         }
 
-        fileRouter.routeRejected(file);
         System.out.printf("Rejected %s because no schema matched%n", file.getFileName());
     }
 
-    private void persistMappingSafely(Path acceptedFile, SchemaDefinition schemaDefinition)
+    private void persistMappingSafely(Path acceptedFile, SchemaDefinition schemaDefinition) throws Exception
     {
         try
         {
-            mappingRepository.insertMapping(acceptedFile, schemaDefinition);
+            mappingRepository.insertMapping(acceptedFile.toAbsolutePath(), schemaDefinition);
         } catch (Exception exception)
         {
             System.out.printf(
@@ -122,6 +133,7 @@ public final class ValidationPipeline
                     schemaDefinition.id(),
                     exception.getMessage()
             );
+            throw exception;
         }
     }
 }

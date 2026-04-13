@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+@Deprecated
 public final class FileRouter
 {
     private final Path acceptedDirectory;
@@ -16,20 +17,23 @@ public final class FileRouter
         this.rejectedDirectory = rejectedDirectory;
     }
 
-    public Path routeAccepted(Path file) throws IOException
+    public Path routeAccepted(Path base, Path file) throws IOException
     {
-        return move(file, acceptedDirectory);
+        return move(base, file, acceptedDirectory);
     }
 
-    public Path routeRejected(Path file) throws IOException
+    public Path routeRejected(Path base, Path file) throws IOException
     {
-        return move(file, rejectedDirectory);
+        return move(base, file, rejectedDirectory);
     }
 
-    private Path move(Path file, Path targetDirectory) throws IOException
+    private Path move(Path base, Path file, Path targetDirectory) throws IOException
     {
         Files.createDirectories(targetDirectory);
-        Path target = targetDirectory.resolve(file.getFileName());
+        Path relative = base.relativize(file);
+        Path target = targetDirectory.resolve(relative);
+
+        Files.createDirectories(target.getParent());
         return Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
     }
 }

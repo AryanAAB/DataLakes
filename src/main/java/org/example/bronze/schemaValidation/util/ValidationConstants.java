@@ -22,4 +22,12 @@ public class ValidationConstants
             FROM "FileMetaData"
             WHERE path = ?
             """;
+
+    public static final String GET_UNACCEPTED_SQL = """
+            SELECT "globalFileId", path
+            FROM "FileMetaData"
+            LEFT JOIN mappings
+            ON "globalFileId" = file_id
+            WHERE file_id is NULL
+            """;
 }
