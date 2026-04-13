@@ -71,7 +71,7 @@ public final class ValidationPipeline
                 }
                 else
                 {
-                    // optional: log missing or invalid file
+                    Constants.logger.error("Unable to log file {}", file.toAbsolutePath());
                 }
             }
         }
