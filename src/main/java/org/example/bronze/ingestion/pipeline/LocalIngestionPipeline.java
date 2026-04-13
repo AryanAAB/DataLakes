@@ -61,10 +61,9 @@ public class LocalIngestionPipeline implements IngestionPipeline
                     {
                         try
                         {
-                            if(isSameModifiedTime(resource))
+                            if (isSameModifiedTime(resource))
                                 return;
-                        }
-                        catch(Exception e)
+                        } catch (Exception e)
                         {
                             Constants.logger.error(e.getMessage());
                         }

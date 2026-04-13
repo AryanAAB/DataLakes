@@ -7,5 +7,6 @@ public record SchemaDefinition(
         SchemaType type,
         Path location,
         Path customValidatorPath
-) {
+)
+{
 }

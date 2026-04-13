@@ -27,8 +27,7 @@ public class Main
 
             for (IngestionPipeline pipeline : ingestion)
                 pipelineManager.triggerNow(pipeline.getId(), 5);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Constants.logger.error(e.getMessage());
         }

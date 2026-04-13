@@ -1,10 +1,10 @@
 package org.example.bronze.schemaValidation.validator;
 
+import org.apache.poi.ss.usermodel.*;
 import org.example.bronze.schemaValidation.model.SchemaDefinition;
 import org.example.bronze.schemaValidation.validator.tabular.HeaderExtractionResult;
 import org.example.bronze.schemaValidation.validator.tabular.HeaderMatcher;
 import org.example.bronze.schemaValidation.validator.tabular.TabularHeaderSupport;
-import org.apache.poi.ss.usermodel.*;
 
 import java.io.IOException;
 import java.io.InputStream;

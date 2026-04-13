@@ -8,7 +8,7 @@ public enum FileType
 
     public static FileType getVersionFile(boolean isCheckpoint)
     {
-        if(isCheckpoint) return CHECKPOINT;
+        if (isCheckpoint) return CHECKPOINT;
         else return DIFF;
     }
 }

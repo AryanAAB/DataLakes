@@ -20,7 +20,7 @@ public final class FileIdProvider
 
         ResultSet rs = ps.executeQuery();
 
-        if(!rs.next())
+        if (!rs.next())
             throw new SQLException("File not found in metadata: " + filePath);
 
         return rs.getLong("globalFileId");

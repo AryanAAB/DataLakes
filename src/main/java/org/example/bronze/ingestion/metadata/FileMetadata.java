@@ -1,7 +1,5 @@
 package org.example.bronze.ingestion.metadata;
 
-import com.google.api.client.util.DateTime;
-
 import java.time.Instant;
 
 public class FileMetadata
