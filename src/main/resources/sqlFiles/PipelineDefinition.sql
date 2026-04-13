@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS public."Pipeline"
     "configFilePath" text COLLATE pg_catalog."default" NOT NULL,
     "createdAt" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pipeline_pkey PRIMARY KEY ("pipelineId")
-)
+    )
 
-TABLESPACE pg_default;
+    TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."Pipeline"
     OWNER to postgres;
