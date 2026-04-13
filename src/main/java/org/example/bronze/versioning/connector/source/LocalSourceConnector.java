@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+@Deprecated
 public class LocalSourceConnector implements SourceConnector
 {
     private final Path sourceDirectory;

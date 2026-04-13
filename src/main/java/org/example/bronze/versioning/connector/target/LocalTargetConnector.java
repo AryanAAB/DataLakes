@@ -1,11 +1,18 @@
 package org.example.bronze.versioning.connector.target;
 
+import org.example.bronze.util.DatabaseConfig;
 import org.example.bronze.versioning.metadata.FileMetadata;
+import org.example.bronze.versioning.util.VersioningConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class LocalTargetConnector implements TargetConnector
@@ -20,22 +27,28 @@ public class LocalTargetConnector implements TargetConnector
     @Override
     public Stream<FileMetadata> discoverFiles() throws IOException
     {
-        return Files.walk(root)
-                .filter(Files::isRegularFile)
-                .map(path ->
-                {
-                    try
-                    {
-                        return new FileMetadata(
-                                root.relativize(path).toString(),
-                                path.getFileName().toString(),
-                                Files.getLastModifiedTime(path).toInstant()
-                        );
-                    } catch (Exception e)
-                    {
-                        throw new RuntimeException(e);
-                    }
-                });
+        List<FileMetadata> result = new ArrayList<>();
+
+        try (Connection connection = DatabaseConfig.getDataSource().getConnection();
+             PreparedStatement stmt = connection.prepareStatement(VersioningConstants.GET_ALL_FILES);
+             ResultSet rs = stmt.executeQuery())
+        {
+
+            while (rs.next())
+            {
+                result.add(new FileMetadata(
+                        rs.getLong("globalFileId"),
+                        rs.getString("path"),
+                        rs.getTimestamp("modifiedTime").toInstant()
+                ));
+            }
+
+        } catch (SQLException e)
+        {
+            throw new IOException(e);
+        }
+
+        return result.stream();
     }
 
     @Override
@@ -47,6 +60,6 @@ public class LocalTargetConnector implements TargetConnector
     @Override
     public Path resolve(FileMetadata file)
     {
-        return root.resolve(file.path());
+        return root.resolve(file.filePath());
     }
 }

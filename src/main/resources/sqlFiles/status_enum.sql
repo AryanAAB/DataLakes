@@ -1,0 +1,1 @@
+CREATE TYPE status_enum AS ENUM ('GLOBAL', 'CHECKPOINT', 'DIFF');

@@ -8,6 +8,7 @@ import org.example.bronze.versioning.metadata.FileType;
 import org.example.bronze.versioning.metadata.FileVersion;
 import org.example.bronze.versioning.metadata.VersionStore;
 import org.example.bronze.versioning.util.HashUtil;
+import org.example.bronze.versioning.util.VersioningConstants;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,16 +48,19 @@ public class SyncEngine implements Syncable
                     process(f);
                 } catch (Exception e)
                 {
-                    Constants.logger.error("Processing failed for file " + f.fileName(), e);
+                    Constants.logger.error("Processing failed for file {}", f.fileId(), e);
                 }
             });
+        }
+        catch(Exception e)
+        {
+            Constants.logger.error("No files found", e);
         }
     }
 
     private void process(FileMetadata meta) throws Exception
     {
-        String fileId = meta.path();
-        String fileName = meta.fileName();
+        long fileId = meta.fileId();
 
         Path newFilePath = source.resolve(meta);
 
@@ -76,7 +80,7 @@ public class SyncEngine implements Syncable
         int nextVersion = latestOpt.map(v -> v.version() + 1).orElse(0);
         boolean snapshot = nextVersion % SNAPSHOT_INTERVAL == 0;
 
-        Path versionPath = allocate(fileId, nextVersion, snapshot);
+        Path versionPath = allocate(meta.filePath(), nextVersion, snapshot);
 
         if (latestOpt.isEmpty() || snapshot)
         {
@@ -101,9 +105,9 @@ public class SyncEngine implements Syncable
                             versionPath.toString(), newHash, newSize));
         }
 
-        Path globalFilePath = allocateGlobal(fileId);
+        Path globalFilePath = allocateGlobal(meta.filePath());
 
-        Files.move(newFilePath, globalFilePath, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(newFilePath, globalFilePath, StandardCopyOption.REPLACE_EXISTING);
 
         FileVersion globalFile = new FileVersion(FileType.GLOBAL, null, null,
                 globalFilePath.toString(), newHash, newSize);
@@ -111,18 +115,18 @@ public class SyncEngine implements Syncable
         store.saveGlobalFile(fileId, globalFile);
     }
 
-    private Path allocateGlobal(String fileId) throws Exception
+    private Path allocateGlobal(String filePath) throws Exception
     {
-        Path dir = targetRoot.resolve(fileId);
+        Path dir = targetRoot.resolve(filePath);
         Files.createDirectories(dir);
 
-        String fileName = Path.of(fileId).getFileName().toString();
+        String fileName = Path.of(filePath).getFileName().toString();
         return dir.resolve(fileName);
     }
 
-    private Path allocate(String fileId, int version, boolean full) throws Exception
+    private Path allocate(String filePath, int version, boolean full) throws Exception
     {
-        Path dir = targetRoot.resolve(fileId);
+        Path dir = targetRoot.resolve(filePath);
         Files.createDirectories(dir);
 
         return dir.resolve("v" + version + (full ? ".full" : ".delta"));

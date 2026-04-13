@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.Optional;
 
 public class PostgresVersionStore implements VersionStore
@@ -19,7 +20,7 @@ public class PostgresVersionStore implements VersionStore
     }
 
     @Override
-    public Optional<FileVersion> getLatestVersion(String fileId)
+    public Optional<FileVersion> getLatestVersion(long fileId)
     {
         String sql = VersioningConstants.GET_LATEST_VERSION;
 
@@ -27,7 +28,7 @@ public class PostgresVersionStore implements VersionStore
     }
 
     @Override
-    public Optional<FileVersion> getLatestCheckpointVersion(String fileId)
+    public Optional<FileVersion> getLatestCheckpointVersion(long fileId)
     {
         String sql = VersioningConstants.GET_LATEST_CHECKPOINT_VERSION;
 
@@ -35,20 +36,20 @@ public class PostgresVersionStore implements VersionStore
     }
 
     @Override
-    public Optional<FileVersion> getGlobalFile(String fileId)
+    public Optional<FileVersion> getGlobalFile(long fileId)
     {
         String sql = VersioningConstants.GET_GLOBAL_FILE;
 
         return get(sql, fileId);
     }
 
-    private Optional<FileVersion> get(String sql, String fileId)
+    private Optional<FileVersion> get(String sql, long fileId)
     {
         try (Connection c = ds.getConnection();
              PreparedStatement ps = c.prepareStatement(sql))
         {
 
-            ps.setString(1, fileId);
+            ps.setLong(1, fileId);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next())
@@ -65,26 +66,26 @@ public class PostgresVersionStore implements VersionStore
     }
 
     @Override
-    public void saveNewVersion(String fileId, FileVersion v)
+    public void saveNewVersion(long fileId, FileVersion v)
     {
         String sql = VersioningConstants.SAVE_VERSION_FILE;
         save(sql, fileId, v);
     }
 
     @Override
-    public void saveGlobalFile(String fileId, FileVersion v)
+    public void saveGlobalFile(long fileId, FileVersion v)
     {
         String sql = VersioningConstants.SAVE_GLOBAL_FILE;
         save(sql, fileId, v);
     }
 
-    private void save(String sql, String fileId, FileVersion v)
+    private void save(String sql, long fileId, FileVersion v)
     {
         try (Connection c = ds.getConnection();
              PreparedStatement ps = c.prepareStatement(sql))
         {
-            ps.setString(1, fileId);
-            ps.setString(2, v.fileType().toString());
+            ps.setLong(1, fileId);
+            ps.setObject(2, v.fileType(), Types.OTHER);
             ps.setObject(3, v.version());
             ps.setObject(4, v.baseVersion());
             ps.setString(5, v.filePath());
