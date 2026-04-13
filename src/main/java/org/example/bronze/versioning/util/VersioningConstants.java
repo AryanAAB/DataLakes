@@ -71,4 +71,6 @@ public class VersioningConstants
     };
 
     public static final String HDIFF_DECODE_BASE = "hpatchz";
+
+    public static final int SNAPSHOT_INTERVAL = 5;
 }

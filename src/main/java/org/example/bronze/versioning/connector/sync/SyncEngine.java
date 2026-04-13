@@ -8,6 +8,7 @@ import org.example.bronze.versioning.metadata.FileType;
 import org.example.bronze.versioning.metadata.FileVersion;
 import org.example.bronze.versioning.metadata.VersionStore;
 import org.example.bronze.versioning.util.HashUtil;
+import org.example.bronze.versioning.util.VersioningConstants;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +18,6 @@ import java.util.stream.Stream;
 
 public class SyncEngine implements Syncable
 {
-    private static final int SNAPSHOT_INTERVAL = 2;
-
     private final TargetConnector source;
     private final VersionStore store;
     private final DiffEngine diff;
@@ -81,7 +80,7 @@ public class SyncEngine implements Syncable
         }
 
         int nextVersion = latestOpt.map(v -> v.version() + 1).orElse(0);
-        boolean snapshot = nextVersion % SNAPSHOT_INTERVAL == 0;
+        boolean snapshot = nextVersion % VersioningConstants.SNAPSHOT_INTERVAL == 0;
 
         Path versionPath = allocate(meta.filePath(), nextVersion, snapshot);
 
