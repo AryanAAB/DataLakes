@@ -52,9 +52,7 @@ public class Main
             pipeline.run();
         } catch (Exception exception)
         {
-            System.out.println("Pipeline execution failed: " + exception.getMessage());
-            exception.printStackTrace(System.out);
-            System.exit(1);
+            Constants.logger.error(exception.getMessage());
         }
     }
 }

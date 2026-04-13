@@ -9,7 +9,6 @@ import org.example.bronze.schemaValidation.validator.ValidatorFactory;
 import org.example.bronze.util.Constants;
 import org.example.bronze.util.DatabaseConfig;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -85,13 +84,13 @@ public final class ValidationPipeline
             processFile(file);
         } catch (Exception exception)
         {
-            System.out.printf("Failed to process %s: %s%n", file.getFileName(), exception.getMessage());
+            Constants.logger.error("Failed to process {}: {}", file.getFileName(), exception.getMessage());
         }
     }
 
     private void processFile(Path file) throws Exception
     {
-        System.out.printf("Validating %s%n", file.getFileName());
+        Constants.logger.info("Validating {}", file.getFileName());
 
         for (SchemaDefinition schemaDefinition : schemaSelectionStrategy.orderCandidates(file, schemaDefinitions))
         {
@@ -101,23 +100,23 @@ public final class ValidationPipeline
             if (result.matched())
             {
                 persistMappingSafely(file, schemaDefinition);
-                System.out.printf(
-                        "Accepted %s with schema %s%n",
+                Constants.logger.info(
+                        "Accepted {} with schema {}",
                         file.getFileName(),
                         schemaDefinition.id()
                 );
                 return;
             }
 
-            System.out.printf(
-                    "Schema %s did not match %s: %s%n",
+            Constants.logger.error(
+                    "Schema {} did not match {}: {}",
                     schemaDefinition.id(),
                     file.getFileName(),
                     result.message()
             );
         }
 
-        System.out.printf("Rejected %s because no schema matched%n", file.getFileName());
+        Constants.logger.error("Rejected {} because no schema matched", file.getFileName());
     }
 
     private void persistMappingSafely(Path acceptedFile, SchemaDefinition schemaDefinition) throws Exception
@@ -127,8 +126,8 @@ public final class ValidationPipeline
             mappingRepository.insertMapping(acceptedFile.toAbsolutePath(), schemaDefinition);
         } catch (Exception exception)
         {
-            System.out.printf(
-                    "Accepted %s but failed to write mapping row for schema %s: %s%n",
+            Constants.logger.error(
+                    "Accepted {} but failed to write mapping row for schema {}: {}",
                     acceptedFile.getFileName(),
                     schemaDefinition.id(),
                     exception.getMessage()
