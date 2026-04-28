@@ -1,4 +1,4 @@
-package org.example.bronze.ui;
+package org.example.bronze.ui.util;
 
 public interface Refreshable
 {

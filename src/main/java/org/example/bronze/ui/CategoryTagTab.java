@@ -1,6 +1,7 @@
 package org.example.bronze.ui;
 
 import org.example.bronze.ui.util.Constants;
+import org.example.bronze.ui.util.Refreshable;
 import org.example.bronze.ui.util.ToastManager;
 import org.example.bronze.util.DatabaseConfig;
 

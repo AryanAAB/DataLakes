@@ -1,5 +1,7 @@
 package org.example.bronze.ui;
 
+import org.example.bronze.ui.util.Refreshable;
+
 import javax.swing.*;
 import java.awt.*;
 
