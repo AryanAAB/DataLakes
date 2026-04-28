@@ -1,6 +1,7 @@
 package org.example.bronze.ui;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class BronzeApp extends JFrame
 {
@@ -15,6 +16,17 @@ public class BronzeApp extends JFrame
         // Add tabs as separate classes
         tabbedPane.add("Users", new UsersTab());
         tabbedPane.add("Pipeline Categories", new CategoryTab());
+        tabbedPane.add("Assign Tags to Categories", new CategoryTagTab());
+
+        tabbedPane.addChangeListener(e ->
+        {
+            Component selected = tabbedPane.getSelectedComponent();
+
+            if (selected instanceof Refreshable refreshable)
+            {
+                refreshable.refresh();
+            }
+        });
 
         add(tabbedPane);
     }

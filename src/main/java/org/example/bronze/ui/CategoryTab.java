@@ -87,10 +87,7 @@ public class CategoryTab extends Tab
                     refresh();
                 } catch (Exception e)
                 {
-                    String message = e.getMessage();
-
-                    if (e.getCause() != null) message = e.getCause().getMessage();
-
+                    org.example.bronze.util.Constants.logger.error("Unable to add category", e);
                     JOptionPane.showMessageDialog(CategoryTab.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -165,14 +162,14 @@ public class CategoryTab extends Tab
 
                     updateData(data);
 
-                } catch (Exception ex)
+                } catch (Exception e)
                 {
                     org.example.bronze.util.Constants.logger.error(
-                            "Failed to fetch categories from database", ex);
+                            "Failed to fetch categories from database", e);
 
                     JOptionPane.showMessageDialog(
                             CategoryTab.this,
-                            ex.getMessage(),
+                            e.getMessage(),
                             "Error",
                             JOptionPane.ERROR_MESSAGE
                     );
@@ -253,9 +250,10 @@ public class CategoryTab extends Tab
                     JOptionPane.showMessageDialog(CategoryTab.this, "Category updated");
 
                     refresh();
-                } catch (Exception ex)
+                } catch (Exception e)
                 {
-                    JOptionPane.showMessageDialog(CategoryTab.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    org.example.bronze.util.Constants.logger.error("Unable to update category", e);
+                    JOptionPane.showMessageDialog(CategoryTab.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };

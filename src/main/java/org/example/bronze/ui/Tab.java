@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-public abstract class Tab extends JPanel
+public abstract class Tab extends JPanel implements Refreshable
 {
     private DefaultTableModel tableModel;
     private JTable table;
@@ -42,7 +42,7 @@ public abstract class Tab extends JPanel
         }
     }
 
-    protected void refresh()
+    public void refresh()
     {
         fetchDataAsync();
     }

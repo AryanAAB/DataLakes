@@ -98,10 +98,6 @@ public class UsersTab extends Tab
                     refresh();
                 } catch (Exception e)
                 {
-                    String message = e.getMessage();
-
-                    if (e.getCause() != null) message = e.getCause().getMessage();
-
                     JOptionPane.showMessageDialog(UsersTab.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -180,14 +176,14 @@ public class UsersTab extends Tab
 
                     updateData(data);
 
-                } catch (Exception ex)
+                } catch (Exception e)
                 {
                     org.example.bronze.util.Constants.logger.error(
-                            "Failed to fetch users from database", ex);
+                            "Failed to fetch users from database", e);
 
                     JOptionPane.showMessageDialog(
                             UsersTab.this,
-                            ex.getMessage(),
+                            e.getMessage(),
                             "Error",
                             JOptionPane.ERROR_MESSAGE
                     );
@@ -279,9 +275,10 @@ public class UsersTab extends Tab
                     JOptionPane.showMessageDialog(UsersTab.this, "User updated");
 
                     refresh();
-                } catch (Exception ex)
+                } catch (Exception e)
                 {
-                    JOptionPane.showMessageDialog(UsersTab.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    org.example.bronze.util.Constants.logger.error("Unable to update user", e);
+                    JOptionPane.showMessageDialog(UsersTab.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
