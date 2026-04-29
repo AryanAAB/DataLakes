@@ -3,18 +3,18 @@ package org.example.bronze.ui.util;
 public class Constants
 {
     public static final String ADD_USER = """
-            INSERT INTO users (internal_id, name, is_active)
+            INSERT INTO users (internal_id, name, isactive)
             VALUES (?, ?, ?)
             """;
 
     public static final String UPDATE_USER = """
             UPDATE users
-            SET internal_id=?, name=?, is_active=?
+            SET internal_id=?, name=?, isactive=?
             WHERE user_id=?
             """;
 
     public static final String GET_ALL_USERS = """
-            SELECT user_id, internal_id, name, is_active
+            SELECT user_id, internal_id, name, isactive
             FROM users
             """;
 
@@ -62,26 +62,26 @@ public class Constants
             """;
 
     public static final String ADD_PIPELINE = """
-            INSERT INTO pipeline (config_file_path, is_active, category_id, user_id)
+            INSERT INTO "Pipeline" ("configFilePath", "isActive", category_id, user_id)
             VALUES (?, ?, ?, ?)
             """;
 
     public static final String GET_ALL_PIPELINES = """
             SELECT
-                p.pipeline_id,
-                p.config_file_path,
+                p."pipelineId",
+                p."configFilePath",
                 c.category_name,
                 u.internal_id,
-                p.is_active,
-                p.created_at
-            FROM pipeline p
+                p."isActive",
+                p."createdAt"
+            FROM "Pipeline" p
             JOIN pipeline_categories c ON p.category_id = c.category_id
             JOIN users u ON p.user_id = u.user_id
             """;
 
     public static final String UPDATE_SCHEMA = """
             UPDATE schemas
-            SET schema_applicable_type = ?,
+            SET schema_applicable_type = CAST(? AS schema_type_enum),
                 schema_custom_validator_path = ?,
                 schema_file_path = ?
             WHERE schema_id = ?;

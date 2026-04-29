@@ -159,7 +159,7 @@ public class UsersTab extends Tab
                                 rs.getString("user_id"),
                                 rs.getString("internal_id"),
                                 rs.getString("name"),
-                                rs.getBoolean("is_active")
+                                rs.getBoolean("isactive")
                         });
                     }
                 }

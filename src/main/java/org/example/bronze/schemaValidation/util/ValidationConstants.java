@@ -18,16 +18,16 @@ public class ValidationConstants
             """;
 
     public static final String GET_FILE_ID_SQL = """
-            SELECT global_file_id
-            FROM file_meta_data
+            SELECT "globalFileId"
+            FROM "FileMetaData"
             WHERE path = ?
             """;
 
     public static final String GET_UNACCEPTED_SQL = """
-            SELECT global_file_id, path
-            FROM file_meta_data
+            SELECT "globalFileId", path
+            FROM "FileMetaData"
             LEFT JOIN mappings
-            ON global_file_id = file_id
+            ON "globalFileId" = file_id
             WHERE file_id is NULL
             """;
 }

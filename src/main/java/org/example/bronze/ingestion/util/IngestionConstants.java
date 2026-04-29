@@ -7,31 +7,31 @@ public class IngestionConstants
     public static final String GDRIVE_CREDENTIALS = "credentialPath";
 
     public static final String GET_PIPELINES = """
-            SELECT pipeline_id, config_file_path FROM pipeline WHERE is_active = true
+            SELECT "pipelineId", "configFilePath" FROM "Pipeline" WHERE "isActive" = true
             """;
 
     public static final String ADD_METADATA = """
-            INSERT INTO file_meta_data
-            (pipeline_id, id, parent_id, name, path, mime_type, export_mime_type,
-             size, created_time, modified_time)
+            INSERT INTO "FileMetaData"
+            ("pipelineId", "id", "parentId", "name", "path", "mimeType", "exportMimeType",
+             "size", "createdTime", "modifiedTime")
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (pipeline_id, id)
+            ON CONFLICT ("pipelineId", "id")
             DO UPDATE SET
-                parent_id = EXCLUDED.parent_id,
-                name = EXCLUDED.name,
-                path = EXCLUDED.path,
-                mime_type = EXCLUDED.mime_type,
-                export_mime_type = EXCLUDED.export_mime_type,
-                size = EXCLUDED.size,
-                created_time = EXCLUDED.created_time,
-                modified_time = EXCLUDED.modified_time;
+                "parentId" = EXCLUDED."parentId",
+                "name" = EXCLUDED."name",
+                "path" = EXCLUDED."path",
+                "mimeType" = EXCLUDED."mimeType",
+                "exportMimeType" = EXCLUDED."exportMimeType",
+                "size" = EXCLUDED."size",
+                "createdTime" = EXCLUDED."createdTime",
+                "modifiedTime" = EXCLUDED."modifiedTime";
             """;
 
     public static final String CHECK_MODIFIED = """
             SELECT 1
-            FROM file_meta_data
-            WHERE pipeline_id = ?
+            FROM "FileMetaData"
+            WHERE "pipelineId" = ?
             AND id = ?
-            AND modified_time = ?
+            AND "modifiedTime" = ?
             """;
 }

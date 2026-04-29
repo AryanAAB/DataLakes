@@ -196,12 +196,12 @@ public class PipelineTab extends Tab
                     while (rs.next())
                     {
                         rows.add(new Object[]{
-                                rs.getLong("pipeline_id"),
-                                rs.getString("config_file_path"),
+                                rs.getLong("pipelineId"),
+                                rs.getString("configFilePath"),
                                 rs.getString("category_name"),
                                 rs.getString("internal_id"),
-                                rs.getBoolean("is_active"),
-                                rs.getTimestamp("created_at")
+                                rs.getBoolean("isActive"),
+                                rs.getTimestamp("createdAt")
                         });
                     }
                 }

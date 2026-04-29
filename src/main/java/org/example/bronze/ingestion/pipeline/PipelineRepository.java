@@ -31,8 +31,8 @@ public class PipelineRepository
 
             while (rs.next())
             {
-                long pipelineId = rs.getLong("pipeline_id");
-                String configFilePath = rs.getString("config_file_path");
+                long pipelineId = rs.getLong("pipelineId");
+                String configFilePath = rs.getString("configFilePath");
 
                 try
                 {
