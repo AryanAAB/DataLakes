@@ -23,6 +23,6 @@ public final class FileIdProvider
         if (!rs.next())
             throw new SQLException("File not found in metadata: " + filePath);
 
-        return rs.getLong("globalFileId");
+        return rs.getLong("global_file_id");
     }
 }
