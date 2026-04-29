@@ -78,4 +78,29 @@ public class Constants
             JOIN pipeline_categories c ON p.category_id = c.category_id
             JOIN users u ON p.user_id = u.user_id
             """;
+
+    public static final String UPDATE_SCHEMA = """
+            UPDATE schemas
+            SET schema_applicable_type = ?,
+                schema_custom_validator_path = ?,
+                schema_file_path = ?
+            WHERE schema_id = ?;
+            """;
+
+    public static final String GET_SCHEMA_TYPES = """
+            SELECT unnest(enum_range(NULL::schema_type_enum));
+            """;
+
+    public static final String GET_ALL_SCHEMAS = """
+            SELECT * FROM schemas;
+            """;
+
+    public static final String ADD_SCHEMA = """
+            INSERT INTO schemas (
+                schema_id,
+                schema_applicable_type,
+                schema_custom_validator_path,
+                schema_file_path
+            ) VALUES (?, CAST(? AS schema_type_enum), ?, ?);
+            """;
 }
