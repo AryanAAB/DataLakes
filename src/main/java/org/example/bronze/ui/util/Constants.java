@@ -60,4 +60,22 @@ public class Constants
             JOIN category_tags ct ON t.tag_id = ct.tag_id
             WHERE ct.category_id = ?
             """;
+
+    public static final String ADD_PIPELINE = """
+            INSERT INTO pipeline (config_file_path, is_active, category_id, user_id)
+            VALUES (?, ?, ?, ?)
+            """;
+
+    public static final String GET_ALL_PIPELINES = """
+            SELECT
+                p.pipeline_id,
+                p.config_file_path,
+                c.category_name,
+                u.internal_id,
+                p.is_active,
+                p.created_at
+            FROM pipeline p
+            JOIN pipeline_categories c ON p.category_id = c.category_id
+            JOIN users u ON p.user_id = u.user_id
+            """;
 }

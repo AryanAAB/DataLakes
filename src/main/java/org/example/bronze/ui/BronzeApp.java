@@ -19,7 +19,7 @@ public class BronzeApp extends JFrame
         tabbedPane.add("Users", new UsersTab());
         tabbedPane.add("Pipeline Categories", new CategoryTab());
         tabbedPane.add("Assign Tags to Categories", new CategoryTagTab());
-
+        tabbedPane.add("Pipelines", new PipelineTab());
         tabbedPane.addChangeListener(e ->
         {
             Component selected = tabbedPane.getSelectedComponent();
