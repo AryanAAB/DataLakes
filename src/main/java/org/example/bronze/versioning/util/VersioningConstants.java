@@ -3,8 +3,8 @@ package org.example.bronze.versioning.util;
 public class VersioningConstants
 {
     public static final String GET_ALL_FILES = """
-            SELECT "globalFileId", "path", "modifiedTime"
-            FROM "FileMetaData"
+            SELECT global_file_id, path, modified_time
+            FROM file_meta_data
             WHERE path IS NOT NULL
             """;
 

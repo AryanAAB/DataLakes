@@ -40,9 +40,9 @@ public class LocalTargetConnector implements TargetConnector
             while (rs.next())
             {
                 result.add(new FileMetadata(
-                        rs.getLong("globalFileId"),
+                        rs.getLong("global_file_id"),
                         rs.getString("path"),
-                        rs.getTimestamp("modifiedTime").toInstant()
+                        rs.getTimestamp("modified_time").toInstant()
                 ));
             }
 

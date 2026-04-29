@@ -17,17 +17,17 @@ public class ValidationConstants
             ORDER BY schema_id
             """;
 
-    public static final String GET_FILEID_SQL = """
-            SELECT "globalFileId"
-            FROM "FileMetaData"
+    public static final String GET_FILE_ID_SQL = """
+            SELECT global_file_id
+            FROM file_meta_data
             WHERE path = ?
             """;
 
     public static final String GET_UNACCEPTED_SQL = """
-            SELECT "globalFileId", path
-            FROM "FileMetaData"
+            SELECT global_file_id, path
+            FROM file_meta_data
             LEFT JOIN mappings
-            ON "globalFileId" = file_id
+            ON global_file_id = file_id
             WHERE file_id is NULL
             """;
 }

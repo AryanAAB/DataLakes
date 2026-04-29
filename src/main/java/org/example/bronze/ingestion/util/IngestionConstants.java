@@ -2,13 +2,12 @@ package org.example.bronze.ingestion.util;
 
 public class IngestionConstants
 {
-    public static final String CONNECTOR_NAME = "connector";
     public static final String PIPELINE_NAME = "pipelineName";
     public static final String STAGE_DIRECTORY_PATH = "stageDirectoryPath";
     public static final String GDRIVE_CREDENTIALS = "credentialPath";
 
     public static final String GET_PIPELINES = """
-            SELECT pipeline_id, config_file_path FROM pipeline WHERE "is_active = true
+            SELECT pipeline_id, config_file_path FROM pipeline WHERE is_active = true
             """;
 
     public static final String ADD_METADATA = """
@@ -24,7 +23,7 @@ public class IngestionConstants
                 mime_type = EXCLUDED.mime_type,
                 export_mime_type = EXCLUDED.export_mime_type,
                 size = EXCLUDED.size,
-                created_time = EXCLUDED.create_time,
+                created_time = EXCLUDED.created_time,
                 modified_time = EXCLUDED.modified_time;
             """;
 

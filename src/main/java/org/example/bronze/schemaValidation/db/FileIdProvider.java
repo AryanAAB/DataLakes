@@ -15,7 +15,7 @@ public final class FileIdProvider
         if (filePath == null)
             throw new IllegalArgumentException("filePath cannot be null");
 
-        PreparedStatement ps = connection.prepareStatement(ValidationConstants.GET_FILEID_SQL);
+        PreparedStatement ps = connection.prepareStatement(ValidationConstants.GET_FILE_ID_SQL);
         ps.setString(1, filePath.toString());
 
         ResultSet rs = ps.executeQuery();
